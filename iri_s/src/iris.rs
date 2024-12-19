@@ -1,7 +1,5 @@
 use oxiri::Iri;
 use oxrdf::NamedNode;
-use reqwest::header;
-use reqwest::header::USER_AGENT;
 use serde::de;
 use serde::de::Visitor;
 use serde::Deserialize;
@@ -107,70 +105,76 @@ impl IriS {
     /// [Dereference](https://www.w3.org/wiki/DereferenceURI) the IRI and get the content available from it
     /// It handles also IRIs with the `file` scheme as local file names. For example: `file:///person.txt`
     ///
-    pub fn dereference(&self, base: &Option<IriS>) -> Result<String, IriSError> {
-        let url = match base {
-            Some(base_iri) => {
-                let base =
-                    Url::from_str(base_iri.as_str()).map_err(|e| IriSError::UrlParseError {
-                        str: self.iri.as_str().to_string(),
-                        error: format!("{e}"),
-                    })?;
-                Url::options()
-                    .base_url(Some(&base))
-                    .parse(self.iri.as_str())
-                    .map_err(|e| IriSError::IriParseErrorWithBase {
-                        str: self.iri.as_str().to_string(),
-                        base: format!("{base}"),
-                        error: format!("{e}"),
-                    })?
-            }
-            None => Url::from_str(self.iri.as_str()).map_err(|e| IriSError::UrlParseError {
-                str: self.iri.as_str().to_string(),
-                error: format!("{e}"),
-            })?,
-        };
-        match url.scheme() {
-            "file" => {
-                let path = url
-                    .to_file_path()
-                    .map_err(|_| IriSError::ConvertingFileUrlToPath {
-                        url: format!("{url}"),
-                    })?;
-                let path_name = path.to_string_lossy().to_string();
-                let body = fs::read_to_string(path).map_err(|e| IriSError::IOErrorFile {
-                    path: path_name,
-                    url: format!("{url}"),
-                    error: format!("{e}"),
-                })?;
-                Ok(body)
-            }
-            _ => {
-                let mut headers = header::HeaderMap::new();
-                /* TODO: Add a parameter with the Accept header ?
-                headers.insert(
-                    ACCEPT,
-                    header::HeaderValue::from_static(""),
-                );*/
-                headers.insert(USER_AGENT, header::HeaderValue::from_static("rudof"));
-                let client = reqwest::blocking::Client::builder()
-                    .default_headers(headers)
-                    .build()
-                    .map_err(|e| IriSError::ReqwestClientCreation {
-                        error: format!("{e}"),
-                    })?;
-                let body = client
-                    .get(url)
-                    .send()
-                    .map_err(|e| IriSError::ReqwestError {
-                        error: format!("{e}"),
-                    })?
-                    .text()
-                    .map_err(|e| IriSError::ReqwestTextError {
-                        error: format!("{e}"),
-                    })?;
-                Ok(body)
-            }
-        }
+    pub fn dereference(&self, _base: &Option<IriS>) -> Result<String, IriSError> {
+        return Err(IriSError::ReqwestClientCreation {
+            error: String::from("reqwest is not enabled"),
+        });
+        // let url = match base {
+        //     Some(base_iri) => {
+        //         let base =
+        //             Url::from_str(base_iri.as_str()).map_err(|e| IriSError::UrlParseError {
+        //                 str: self.iri.as_str().to_string(),
+        //                 error: format!("{e}"),
+        //             })?;
+        //         Url::options()
+        //             .base_url(Some(&base))
+        //             .parse(self.iri.as_str())
+        //             .map_err(|e| IriSError::IriParseErrorWithBase {
+        //                 str: self.iri.as_str().to_string(),
+        //                 base: format!("{base}"),
+        //                 error: format!("{e}"),
+        //             })?
+        //     }
+        //     None => Url::from_str(self.iri.as_str()).map_err(|e| IriSError::UrlParseError {
+        //         str: self.iri.as_str().to_string(),
+        //         error: format!("{e}"),
+        //     })?,
+        // };
+        // match url.scheme() {
+        //     "file" => {
+        //         let path = url
+        //             .to_file_path()
+        //             .map_err(|_| IriSError::ConvertingFileUrlToPath {
+        //                 url: format!("{url}"),
+        //             })?;
+        //         let path_name = path.to_string_lossy().to_string();
+        //         let body = fs::read_to_string(path).map_err(|e| IriSError::IOErrorFile {
+        //             path: path_name,
+        //             url: format!("{url}"),
+        //             error: format!("{e}"),
+        //         })?;
+        //         Ok(body)
+        //     }
+        //     _ => {
+        //         Err(IriSError::ReqwestClientCreation {
+        //             error: String::from("reqwest is not enabled"),
+        //         })
+        //         // let mut headers = header::HeaderMap::new();
+        //         // /* TODO: Add a parameter with the Accept header ?
+        //         // headers.insert(
+        //         //     ACCEPT,
+        //         //     header::HeaderValue::from_static(""),
+        //         // );*/
+        //         // headers.insert(USER_AGENT, header::HeaderValue::from_static("rudof"));
+        //         // let client = reqwest::blocking::Client::builder()
+        //         //     .default_headers(headers)
+        //         //     .build()
+        //         //     .map_err(|e| IriSError::ReqwestClientCreation {
+        //         //         error: format!("{e}"),
+        //         //     })?;
+        //         // let body = client
+        //         //     .get(url)
+        //         //     .send()
+        //         //     .map_err(|e| IriSError::ReqwestError {
+        //         //         error: format!("{e}"),
+        //         //     })?
+        //         //     .text()
+        //         //     .map_err(|e| IriSError::ReqwestTextError {
+        //         //         error: format!("{e}"),
+        //         //     })?;
+        //         // Ok(body)
+        //     }
+        // }
     }
 
     /*    pub fn is_absolute(&self) -> bool {

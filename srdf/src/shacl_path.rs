@@ -20,6 +20,13 @@ impl SHACLPath {
     pub fn iri(pred: IriS) -> Self {
         SHACLPath::Predicate { pred }
     }
+    pub fn pred(&self) -> Option<&IriS> {
+        match self {
+            SHACLPath::Predicate { pred } => Some(pred),
+            _ => None
+        }
+
+    }
 }
 
 impl Display for SHACLPath {

@@ -1,7 +1,7 @@
 use shex_ast::CompiledSchemaError;
 use std::fmt::Debug;
 use thiserror::Error;
-use tokio::task::JoinError;
+// use tokio::task::JoinError;
 
 use crate::CardinalityError;
 
@@ -27,20 +27,20 @@ where
 
     #[error("Cardinality error: {ce:?}")]
     CardinalityError { ce: CardinalityError },
-
-    #[error("JoinError: {je:?}")]
-    JoinError { je: JoinError },
-
+    //
+    // #[error("JoinError: {je:?}")]
+    // JoinError { je: JoinError },
+    //
 }
 
-impl<'a, SL> From<JoinError> for ValidationError<'a, SL>
-where
-    SL: Debug,
-{
-    fn from(je: JoinError) -> Self {
-        ValidationError::JoinError { je: je }
-    }
-}
+// impl<'a, SL> From<JoinError> for ValidationError<'a, SL>
+// where
+//     SL: Debug,
+// {
+//     fn from(je: JoinError) -> Self {
+//         ValidationError::JoinError { je: je }
+//     }
+// }
 
 impl<'a, SL> From<CompiledSchemaError> for ValidationError<'a, SL>
 where

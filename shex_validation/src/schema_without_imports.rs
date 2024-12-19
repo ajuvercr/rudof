@@ -206,14 +206,15 @@ pub fn resolve_iri_or_str(
 }
 
 pub fn local_folder_as_iri() -> Result<IriS, SchemaJsonError> {
-    let current_dir = std::env::current_dir().map_err(|e| SchemaJsonError::CurrentDir {
-        error: format!("{e}"),
-    })?;
-    debug!("Current dir: {current_dir:?}");
-    let url = Url::from_file_path(&current_dir)
-        .map_err(|_e| SchemaJsonError::LocalFolderIriError { path: current_dir })?;
-    debug!("url: {url}");
-    Ok(IriS::new_unchecked(url.as_str()))
+    Err(SchemaJsonError::CurrentDir { error: String::from("No local folder on web") })
+    // let current_dir = std::env::current_dir().map_err(|e| SchemaJsonError::CurrentDir {
+    //     error: format!("{e}"),
+    // })?;
+    // debug!("Current dir: {current_dir:?}");
+    // let url = Url::from_file_path(&current_dir)
+    //     .map_err(|_e| SchemaJsonError::LocalFolderIriError { path: current_dir })?;
+    // debug!("url: {url}");
+    // Ok(IriS::new_unchecked(url.as_str()))
 }
 
 pub fn get_schema_from_iri(
