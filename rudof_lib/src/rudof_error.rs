@@ -114,6 +114,7 @@ pub enum RudofError {
     #[error("Cannot serialize current ShEx schema because it has not been defined")]
     NoShExSchemaToSerialize,
 
+    #[cfg(feature = "dctap")]
     #[error("No DCTAP defined")]
     NoDCTAP,
 
@@ -168,15 +169,19 @@ pub enum RudofError {
     #[error("Serializing ShEx: {error}")]
     SerializingShacl { error: String },
 
+    #[cfg(feature = "dctap")]
     #[error("DCTAP reader from path {path} in CSV format: {error}")]
     DCTAPReaderCSV { error: String, path: String },
 
+    #[cfg(feature = "dctap")]
     #[error("DCTAP reader from path {path}: {error}")]
     ReadingDCTAPPath { error: String, path: String },
 
+    #[cfg(feature = "dctap")]
     #[error("DCTAP reader in CSV format: {error}")]
     DCTAPReaderCSVReader { error: String },
 
+    #[cfg(feature = "dctap")]
     #[error("DCTAP reader from path {path} in CSV format: {error}")]
     DCTAPReaderPathXLS {
         error: String,
@@ -184,9 +189,11 @@ pub enum RudofError {
         format: String,
     },
 
+    #[cfg(feature = "dctap")]
     #[error("Reading DCTAP from XLS format requires a Path, use read_dctap_path")]
     DCTAPReadXLSNoPath,
 
+    #[cfg(feature = "dctap")]
     #[error("Error converting DCTAP to ShEx")]
     DCTap2ShEx { error: String },
 }

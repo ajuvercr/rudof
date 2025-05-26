@@ -5,18 +5,23 @@ use shacl_validation::shacl_processor::{GraphValidation, ShaclProcessor};
 use shacl_validation::store::graph::Graph;
 
 use shapemap::{NodeSelector, ShapeSelector};
-use shapes_converter::{ShEx2Uml, Tap2ShEx};
+
+use shapes_converter::ShEx2Uml;
+#[cfg(feature = "dctap")]
+use shapes_converter::Tap2ShEx;
 use shex_ast::ir::schema_ir::SchemaIR;
 use shex_compact::ShExParser;
 use shex_validation::{ResolveMethod, SchemaWithoutImports};
 use srdf::Sparql;
 use srdf::{FocusRDF, SRDFGraph};
 use std::fmt::Debug;
+#[cfg(feature = "dctap")]
 use std::path::Path;
 use std::str::FromStr;
 use std::{io, result};
 
 // These are the structs that are publicly re-exported
+#[cfg(feature = "dctap")]
 pub use dctap::{DCTAPFormat, DCTap as DCTAP};
 pub use iri_s::iri;
 pub use prefixmap::PrefixMap;
@@ -45,6 +50,8 @@ pub struct Rudof {
     resolved_shex_schema: Option<SchemaWithoutImports>,
     shex_validator: Option<ShExValidator>,
     shapemap: Option<QueryShapeMap>,
+
+    #[cfg(feature = "dctap")]
     dctap: Option<DCTAP>,
     shex_results: Option<ResultShapeMap>,
 }
@@ -64,6 +71,8 @@ impl Rudof {
             shex_validator: None,
             rdf_data: RdfData::new(),
             shapemap: None,
+
+            #[cfg(feature = "dctap")]
             dctap: None,
             shex_results: None,
         }
@@ -82,6 +91,7 @@ impl Rudof {
         self.rdf_data = RdfData::new()
     }
 
+    #[cfg(feature = "dctap")]
     /// Resets the current DCTAP
     pub fn reset_dctap(&mut self) {
         self.dctap = None
@@ -95,6 +105,7 @@ impl Rudof {
     /// Resets all current values
     pub fn reset_all(&mut self) {
         self.reset_data();
+        #[cfg(feature = "dctap")]
         self.reset_dctap();
         self.reset_shacl();
         self.reset_shapemap();
@@ -125,6 +136,7 @@ impl Rudof {
     }
 
     /// Get the current DCTAP
+    #[cfg(feature = "dctap")]
     pub fn get_dctap(&self) -> Option<&DCTAP> {
         self.dctap.as_ref()
     }
@@ -136,6 +148,7 @@ impl Rudof {
 
     /// Converts the current DCTAP to a ShExSchema
     /// Stores the value of the ShExSchema in the current shex
+    #[cfg(feature = "dctap")]
     pub fn dctap2shex(&mut self) -> Result<()> {
         if let Some(dctap) = self.get_dctap() {
             let converter = Tap2ShEx::new(&self.config.tap2shex_config());
@@ -363,6 +376,7 @@ impl Rudof {
 
     /// Reads a `DCTAP` and replaces the current one
     /// - `format` indicates the DCTAP format
+    #[cfg(feature = "dctap")]
     pub fn read_dctap<R: std::io::Read>(&mut self, reader: R, format: &DCTAPFormat) -> Result<()> {
         let dctap = match format {
             DCTAPFormat::CSV => {
@@ -383,6 +397,7 @@ impl Rudof {
 
     /// Reads a `DCTAP` and replaces the current one
     /// - `format` indicates the DCTAP format
+    #[cfg(feature = "dctap")]
     pub fn read_dctap_path<P: AsRef<Path>>(&mut self, path: P, format: &DCTAPFormat) -> Result<()> {
         let path_name = path.as_ref().display().to_string();
         let dctap =

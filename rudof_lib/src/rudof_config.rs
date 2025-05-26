@@ -1,8 +1,10 @@
+#[cfg(feature = "dctap")]
 use dctap::TapConfig;
 use serde::{Deserialize, Serialize};
-use shapes_converter::{
-    ShEx2HtmlConfig, ShEx2SparqlConfig, ShEx2UmlConfig, Shacl2ShExConfig, Tap2ShExConfig,
-};
+use shapes_converter::{ShEx2HtmlConfig, ShEx2SparqlConfig, ShEx2UmlConfig, Shacl2ShExConfig};
+
+#[cfg(feature = "dctap")]
+use shapes_converter::Tap2ShExConfig;
 use shex_validation::{ShExConfig, ValidatorConfig};
 use sparql_service::ServiceConfig;
 use srdf::RdfDataConfig;
@@ -22,7 +24,9 @@ pub struct RudofConfig {
     shex2uml: Option<ShEx2UmlConfig>,
     shex2html: Option<ShEx2HtmlConfig>,
     shacl2shex: Option<Shacl2ShExConfig>,
+    #[cfg(feature = "dctap")]
     tap2shex: Option<Tap2ShExConfig>,
+    #[cfg(feature = "dctap")]
     tap: Option<TapConfig>,
     shex2sparql: Option<ShEx2SparqlConfig>,
     service: Option<ServiceConfig>,
@@ -109,10 +113,12 @@ impl RudofConfig {
         self.rdf_data.clone().unwrap_or_default()
     }
 
+    #[cfg(feature = "dctap")]
     pub fn tap_config(&self) -> TapConfig {
         self.tap.clone().unwrap_or_default()
     }
 
+    #[cfg(feature = "dctap")]
     pub fn tap2shex_config(&self) -> Tap2ShExConfig {
         self.tap2shex.clone().unwrap_or_default()
     }

@@ -14,10 +14,11 @@ rdf-star = [
     "spargebra/rdf-star",
     "srdf/rdf-star",
 ]
+# dctap = ["dep:dctap"]
+dctap = []
 
 [dependencies]
 iri_s.workspace = true
-dctap.workspace = true
 srdf.workspace = true
 shacl_ast.workspace = true
 shex_ast.workspace = true
@@ -34,3 +35,5 @@ thiserror = "2.0"
 tracing = { workspace = true }
 minijinja = { version = "2.0.3", features = ["loader"] }
 tempfile = "3.10.1"
+
+# dctap = { workspace = true, optional = true }

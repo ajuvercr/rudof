@@ -1,17 +1,20 @@
+#[cfg(feature = "dctap")]
 use dctap::TapConfig;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 use std::path::Path;
 
-use crate::{
-    ConverterError, ShEx2HtmlConfig, ShEx2SparqlConfig, ShEx2UmlConfig, Shacl2ShExConfig,
-    Tap2ShExConfig,
-};
+use crate::{ConverterError, ShEx2HtmlConfig, ShEx2SparqlConfig, ShEx2UmlConfig, Shacl2ShExConfig};
+
+#[cfg(feature = "dctap")]
+use crate::Tap2ShExConfig;
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Clone, Default)]
 pub struct ConverterConfig {
+    #[cfg(feature = "dctap")]
     dctap: Option<TapConfig>,
     shex2html: Option<ShEx2HtmlConfig>,
+    #[cfg(feature = "dctap")]
     tap2shex: Option<Tap2ShExConfig>,
     shex2sparql: Option<ShEx2SparqlConfig>,
     shacl2shex: Option<Shacl2ShExConfig>,
@@ -43,6 +46,7 @@ impl ConverterConfig {
         Ok(config)
     }
 
+    #[cfg(feature = "dctap")]
     pub fn tap_config(&self) -> TapConfig {
         match &self.dctap {
             Some(tc) => tc.clone(),
@@ -50,6 +54,7 @@ impl ConverterConfig {
         }
     }
 
+    #[cfg(feature = "dctap")]
     pub fn tap2shex_config(&self) -> Tap2ShExConfig {
         match &self.tap2shex {
             Some(c) => c.clone(),

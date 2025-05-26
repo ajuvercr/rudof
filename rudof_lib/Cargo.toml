@@ -11,6 +11,8 @@ repository.workspace = true
 
 [features]
 rdf-star = ["oxrdf/rdf-star"]
+# dctap = ["dep:dctap"]
+dctap = []
 
 [dependencies]
 srdf.workspace = true
@@ -24,9 +26,10 @@ sparql_service.workspace = true
 shapemap.workspace = true
 prefixmap.workspace = true
 shapes_converter.workspace = true
-dctap.workspace = true
 serde.workspace = true
 thiserror = "2.0"
 serde_json.workspace = true
 toml = "0.8"
 oxrdf = { workspace = true, features = ["oxsdatatypes"] }
+
+# dctap = { workspace = true, optional = true }

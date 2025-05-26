@@ -8,6 +8,8 @@ pub mod shacl_to_shex;
 pub mod shex_to_html;
 pub mod shex_to_sparql;
 pub mod shex_to_uml;
+
+#[cfg(feature = "dctap")]
 pub mod tap_to_shex;
 
 use iri_s::IriS;
@@ -30,8 +32,11 @@ pub use crate::shex_to_sparql::shex2sparql_error::*;
 pub use crate::shex_to_uml::shex2uml::*;
 pub use crate::shex_to_uml::shex2uml_config::*;
 pub use crate::shex_to_uml::shex2uml_error::*;
+#[cfg(feature = "dctap")]
 pub use crate::tap_to_shex::tap2shex::*;
+#[cfg(feature = "dctap")]
 pub use crate::tap_to_shex::tap2shex_config::*;
+#[cfg(feature = "dctap")]
 pub use crate::tap_to_shex::tap2shex_error::*;
 
 pub const DEFAULT_REPLACE_IRI_BY_LABEL: bool = true;

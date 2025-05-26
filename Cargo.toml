@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "dctap",
+    # "dctap",
     "rbe",
     "rbe_testsuite",
     "iri_s",
@@ -24,7 +24,7 @@ members = [
 exclude = ["shex_compact_winnow"]
 
 default-members = [
-    "rudof_cli",
+    "rudof_lib",
     # "shacl_ast",
     # "shacl_validation",
     # "srdf",
@@ -83,3 +83,4 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 url = "2.2.2"
 itertools = "0.14"
 lazy_static = "1"
+
