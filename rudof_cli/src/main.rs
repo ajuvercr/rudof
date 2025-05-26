@@ -1,5 +1,6 @@
 extern crate anyhow;
 extern crate clap;
+#[cfg(feature = "dctap")]
 extern crate dctap;
 extern crate iri_s;
 extern crate oxrdf;
@@ -16,11 +17,14 @@ extern crate tracing_subscriber;
 
 use anyhow::*;
 use clap::Parser;
+
 use cli::{
-    Cli, Command, DCTapFormat, DCTapResultFormat, DataFormat, InputConvertMode, MimeType,
-    OutputConvertMode, RDFReaderMode, ResultFormat, ResultQueryFormat, ResultServiceFormat,
-    ShowNodeMode, ValidationMode,
+    Cli, Command, DataFormat, InputConvertMode, MimeType, OutputConvertMode, RDFReaderMode,
+    ResultFormat, ResultQueryFormat, ResultServiceFormat, ShowNodeMode, ValidationMode,
 };
+#[cfg(feature = "dctap")]
+use cli::{DCTapFormat, DCTapResultFormat};
+#[cfg(feature = "dctap")]
 use dctap::DCTAPFormat;
 use iri_s::IriS;
 use prefixmap::{IriRef, PrefixMap};
@@ -31,7 +35,10 @@ use rudof_lib::{
 use shacl_validation::validation_report::report::ValidationReport;
 use shapemap::{NodeSelector, ResultShapeMap, ShapeMapFormat as ShapemapFormat, ShapeSelector};
 use shapes_converter::ShEx2Sparql;
-use shapes_converter::{ImageFormat, ShEx2Html, ShEx2Uml, Shacl2ShEx, Tap2ShEx, UmlGenerationMode};
+
+#[cfg(feature = "dctap")]
+use shapes_converter::Tap2ShEx;
+use shapes_converter::{ImageFormat, ShEx2Html, ShEx2Uml, Shacl2ShEx, UmlGenerationMode};
 use shex_ast::object_value::ObjectValue;
 use shex_ast::{ShapeExprLabel, SimpleReprSchema};
 use sparql_service::{RdfData, ServiceDescription};
@@ -350,6 +357,8 @@ fn main() -> Result<()> {
                 &config,
             )
         }
+
+        #[cfg(feature = "dctap")]
         Some(Command::DCTap {
             file,
             format,
@@ -754,6 +763,7 @@ fn run_shacl(
     Ok(())
 }
 
+#[cfg(feature = "dctap")]
 fn run_dctap(
     input: &InputSpec,
     format: &DCTapFormat,
@@ -800,6 +810,7 @@ fn run_convert(
     // let mut writer = get_writer(output)?;
     let config = get_config(config)?;
     match (input_mode, output_mode) {
+        #[cfg(feature = "dctap")]
         (InputConvertMode::DCTAP, OutputConvertMode::ShEx) => {
             run_tap2shex(input, format, output, result_format, &config, force_overwrite)
         }
@@ -829,9 +840,11 @@ fn run_convert(
                 }
             }
         }
+        #[cfg(feature = "dctap")]
         (InputConvertMode::DCTAP, OutputConvertMode::UML, ) => {
             run_tap2uml(input, format, output, maybe_shape_str, result_format, &config, force_overwrite)
         }
+        #[cfg(feature = "dctap")]
         (InputConvertMode::DCTAP, OutputConvertMode::HTML) => {
             match target_folder {
                 None => Err(anyhow!(
@@ -984,6 +997,7 @@ fn run_shex2html<P: AsRef<Path>>(
     Ok(())
 }
 
+#[cfg(feature = "dctap")]
 fn run_tap2html<P: AsRef<Path>>(
     input: &InputSpec,
     format: &InputConvertFormat,
@@ -1053,6 +1067,7 @@ fn run_shex2sparql(
     Ok(())
 }
 
+#[cfg(feature = "dctap")]
 fn run_tap2shex(
     input_path: &InputSpec,
     format: &InputConvertFormat,
@@ -1086,6 +1101,7 @@ fn run_tap2shex(
     }
 }
 
+#[cfg(feature = "dctap")]
 fn run_tap2uml(
     input_path: &InputSpec,
     format: &InputConvertFormat,
@@ -1517,6 +1533,7 @@ fn parse_shex_schema_rudof(
     Ok(())
 }
 
+#[cfg(feature = "dctap")]
 fn parse_dctap(rudof: &mut Rudof, input: &InputSpec, format: &DCTapFormat) -> Result<()> {
     let dctap_format = match format {
         DCTapFormat::CSV => DCTAPFormat::CSV,

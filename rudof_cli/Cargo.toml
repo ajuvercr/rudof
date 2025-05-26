@@ -13,6 +13,9 @@ repository.workspace = true
 path = "src/main.rs"
 name = "rudof"
 
+[features]
+dctap = []
+
 [dependencies]
 shex_ast = { workspace = true }
 srdf = { workspace = true, features = ["rdf-star"] }
@@ -24,7 +27,7 @@ shacl_ast = { workspace = true, features = ["rdf-star"] }
 shapes_converter = { workspace = true, features = ["rdf-star"] }
 shacl_validation = { workspace = true, features = ["rdf-star"] }
 sparql_service = { workspace = true }
-rudof_lib = { workspace = true, features = ["dctap"] }
+rudof_lib.workspace = true
 
 serde.workspace = true
 serde_json = { workspace = true }

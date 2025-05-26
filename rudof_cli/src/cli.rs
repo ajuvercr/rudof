@@ -544,6 +544,7 @@ pub enum Command {
     },
 
     /// Show information and process DCTAP files
+    #[cfg(feature = "dctap")]
     #[command(name = "dctap")]
     DCTap {
         #[arg(short = 's', long = "source-file", value_name = "DCTap source file")]
@@ -963,6 +964,7 @@ impl Display for ShaclFormat {
     }
 }
 
+#[cfg(feature = "dctap")]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
 #[clap(rename_all = "lower")]
 pub enum DCTapFormat {
@@ -973,6 +975,7 @@ pub enum DCTapFormat {
     XLS,
 }
 
+#[cfg(feature = "dctap")]
 impl Display for DCTapFormat {
     fn fmt(&self, dest: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
@@ -985,6 +988,7 @@ impl Display for DCTapFormat {
     }
 }
 
+#[cfg(feature = "dctap")]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
 #[clap(rename_all = "lower")]
 pub enum DCTapResultFormat {
@@ -992,6 +996,7 @@ pub enum DCTapResultFormat {
     JSON,
 }
 
+#[cfg(feature = "dctap")]
 impl Display for DCTapResultFormat {
     fn fmt(&self, dest: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
@@ -1022,6 +1027,8 @@ impl Display for ValidationMode {
 pub enum InputConvertMode {
     SHACL,
     ShEx,
+
+    #[cfg(feature = "dctap")]
     DCTAP,
 }
 
@@ -1030,6 +1037,7 @@ impl Display for InputConvertMode {
         match self {
             InputConvertMode::SHACL => write!(dest, "shacl"),
             InputConvertMode::ShEx => write!(dest, "shex"),
+            #[cfg(feature = "dctap")]
             InputConvertMode::DCTAP => write!(dest, "dctap"),
         }
     }
