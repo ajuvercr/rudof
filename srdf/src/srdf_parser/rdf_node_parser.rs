@@ -268,6 +268,22 @@ pub trait RDFNodeParse<RDF: FocusRDF> {
     }
 }
 
+impl<RDF, P1, P2, A> RDFNodeParse<RDF> for Result<P1, P2>
+where
+    RDF: FocusRDF,
+    P1: RDFNodeParse<RDF, Output = A>,
+    P2: RDFNodeParse<RDF, Output = A>,
+{
+    type Output = A;
+
+    fn parse_impl(&mut self, rdf: &mut RDF) -> PResult<Self::Output> {
+        match self {
+            Result::Ok(a) => a.parse_impl(rdf),
+            Err(a) => a.parse_impl(rdf),
+        }
+    }
+}
+
 impl<RDF, P1, P2, A, B> RDFNodeParse<RDF> for (P1, P2)
 where
     RDF: FocusRDF,

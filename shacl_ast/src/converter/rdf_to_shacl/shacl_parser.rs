@@ -1,11 +1,11 @@
 use iri_s::IriS;
 use prefixmap::{IriRef, PrefixMap};
 use srdf::{
-    combine_parsers, combine_vec, get_focus, has_type, instances_of, lang::Lang, matcher::Any, not,
-    ok, optional, parse_nodes, property_bool, property_value, property_values, property_values_int,
-    property_values_iri, property_values_non_empty, rdf_list, term, FocusRDF, Iri as _, Literal,
-    PResult, RDFNode, RDFNodeParse, RDFParseError, RDFParser, Rdf, SHACLPath, Term, Triple,
-    RDFS_CLASS, RDF_TYPE,
+    combine_parsers, combine_vec, fail_msg, get_focus, has_type, instances_of, lang::Lang,
+    matcher::Any, not, ok, optional, parse_nodes, property_bool, property_value, property_values,
+    property_values_int, property_values_iri, property_values_non_empty, rdf_list, term, FocusRDF,
+    Iri as _, Literal, PResult, RDFNode, RDFNodeParse, RDFParseError, RDFParser, Rdf, SHACLPath,
+    Term, Triple, RDFS_CLASS, RDF_TYPE,
 };
 use std::collections::{HashMap, HashSet};
 
@@ -39,6 +39,7 @@ where
 {
     rdf_parser: RDFParser<RDF>,
     shapes: HashMap<RDFNode, Shape>,
+    errors: Vec<ShaclParserError>,
 }
 
 impl<RDF> ShaclParser<RDF>
@@ -49,7 +50,12 @@ where
         ShaclParser {
             rdf_parser: RDFParser::new(rdf),
             shapes: HashMap::new(),
+            errors: Vec::new(),
         }
+    }
+
+    pub fn errors(&self) -> &[ShaclParserError] {
+        &self.errors
     }
 
     pub fn parse(&mut self) -> Result<Schema> {
@@ -59,10 +65,17 @@ where
         while let Some(node) = state.pop_pending() {
             if let std::collections::hash_map::Entry::Vacant(e) = self.shapes.entry(node.clone()) {
                 self.rdf_parser.rdf.set_focus(&node.clone().into());
-                let shape = Self::shape(&mut state)
+                match Self::shape(&mut state)
                     .parse_impl(&mut self.rdf_parser.rdf)
-                    .map_err(|e| ShaclParserError::RDFParseError { err: e })?;
-                e.insert(shape);
+                    .map_err(|e| ShaclParserError::RDFParseError { err: e })
+                {
+                    Ok(shape) => {
+                        e.insert(shape);
+                    }
+                    Err(e) => {
+                        self.errors.push(e);
+                    }
+                };
             }
         }
 
@@ -430,9 +443,9 @@ where
         let iri: RDF::IRI = iri;
         let iri_string = iri.as_str();
         let iri_s = IriS::new_unchecked(iri_string);
-        ok(&SHACLPath::iri(iri_s))
+        std::result::Result::Ok(ok(&SHACLPath::iri(iri_s)))
     } else {
-        todo!()
+        std::result::Result::Err(fail_msg(String::from("Only simple paths are supported")))
     }
 }
 
